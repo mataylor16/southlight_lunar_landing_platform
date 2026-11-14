@@ -14,6 +14,8 @@ COPY pyproject.toml poetry.lock* ./
 RUN poetry install --only main --no-root
 
 COPY app.py ./
+COPY terrain.py ./
+COPY assets ./assets
 
 EXPOSE 8501
 
