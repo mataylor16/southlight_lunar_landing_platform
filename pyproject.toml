@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "southlight-lunar-landing-platform"
+version = "0.1.0"
+description = "A Docker-based Streamlit application starter."
+authors = ["Southlight"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+streamlit = ">=1.57,<2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
