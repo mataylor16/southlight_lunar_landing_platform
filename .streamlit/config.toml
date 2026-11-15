@@ -5,3 +5,28 @@ enableXsrfProtection = false
 
 [browser]
 gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#ffd447"
+backgroundColor = "#160d25"
+secondaryBackgroundColor = "#251533"
+textColor = "#fff8ff"
+font = "sans serif"
+headingFont = "sans serif"
+baseRadius = "large"
+buttonRadius = "full"
+showWidgetBorder = true
+linkColor = "#f4bfff"
+borderColor = "#593873"
+chartSequentialColors = ["#271638", "#462064", "#6d2ab0", "#963ee0", "#ba68e8", "#d49af0", "#f1d9fb", "#ffd447", "#ffec9e", "#ffffff"]
+
+[theme.sidebar]
+backgroundColor = "#10091a"
+secondaryBackgroundColor = "#1c102b"
+textColor = "#f7eaff"
+primaryColor = "#ffd447"
+borderColor = "#422a58"
+
+[theme.dark]
+chartSequentialColors = ["#271638", "#462064", "#6d2ab0", "#963ee0", "#ba68e8", "#d49af0", "#f1d9fb", "#ffd447", "#ffec9e", "#ffffff"]
