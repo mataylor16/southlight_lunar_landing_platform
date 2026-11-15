@@ -22,13 +22,16 @@ are not calculated in this terrain inspection view.
 Source: [NASA GSFC LOLA site products](https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/),
 Barker et al. (2021), *Improved LOLA Elevation Maps for South Pole Landing Sites*.
 
-## Site comparison preview
+## JPL Horizons site comparison
 
-The Site comparison page presents selectable candidate sites, a planning date,
-and side-by-side horizon windows for the Sun and Earth. Marker locations are
-illustrative placeholders; JPL Horizons has not yet been connected, and the
-date control does not calculate ephemerides. Terrain blockage is also not
-calculated in this front-end preview.
+The Site comparison page requests date-specific lunar-surface observer
+ephemerides for the Sun and Earth from JPL Horizons. It shows a daily track at
+two-hour intervals and highlights the sample nearest the selected UTC hour.
+An accompanying south-pole locator places the candidate regions around the
+lunar pole, alongside a rotatable 3D globe built from NASA's global LOLA
+elevation model. The globe loads a 4 MB, 4-pixel-per-degree TIFF on first use
+and exaggerates relief 20x for visibility. Candidate coordinates come from the NASA Lunar Surface Data Book.
+Horizons positions do not account for local terrain blocking visibility.
 
 ## Run with Docker
 
