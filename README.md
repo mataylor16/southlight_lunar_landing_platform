@@ -27,6 +27,20 @@ Barker et al. (2021), *Improved LOLA Elevation Maps for South Pole Landing Sites
 The Site comparison page requests date-specific lunar-surface observer
 ephemerides for the Sun and Earth from JPL Horizons. It shows a daily track at
 two-hour intervals and highlights the sample nearest the selected UTC hour.
+An infographic distinguishes visibility above an ideal flat horizon from
+the real skyline, where crater rims and ridges can block a low Sun or Earth.
+A second infographic shows sunlight powering a rover radio, the direct radio
+path to Earth, and how an orbital relay can help when terrain blocks that path.
+The activity explains that a relay receives the rover's signal and forwards it
+toward Earth or another relay, provided the communication links are in view.
+The mission activity turns those samples into approximate hours with the Sun
+and Earth above a flat horizon for each selected site. Children can change the
+area of a Sun-facing solar panel, see a cartoon rover array grow one 1 m² tile
+at a time, and compare an illustrative energy estimate with possible
+direct-to-Earth viewing time. The model assumes 1,361 W/m² of sunlight and 20%
+panel efficiency. It does not include terrain shadows, panel or battery
+losses, communications hardware, relays, or landing safety, so its results are
+teaching estimates rather than mission predictions.
 An accompanying south-pole locator places the candidate regions around the
 lunar pole, alongside a rotatable 3D globe built from NASA's global LOLA
 elevation model. The globe loads a 4 MB, 4-pixel-per-degree TIFF on first use
