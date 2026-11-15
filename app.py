@@ -13,14 +13,6 @@ from rasterio.enums import Resampling
 from rasterio.io import MemoryFile
 from terrain import render_terrain
 
-def landing_status(fuel: int, altitude: int, velocity: int) -> str:
-    """Return a simple flight status for the landing dashboard."""
-    if fuel <= 10 or altitude <= 100 and velocity >= 40:
-        return "CRITICAL"
-    if altitude <= 500 or velocity >= 25:
-        return "CAUTION"
-    return "NOMINAL"
-
 
 # NASA Lunar Surface Data Book center coordinates for PGDA LOLA candidate regions.
 # Format: east longitude, latitude, degrees.
@@ -52,6 +44,17 @@ HORIZONS_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 GLOBAL_LOLA_URL = "https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_4.tif"
 SOLAR_IRRADIANCE_W_M2 = 1361
 CLASSROOM_PANEL_EFFICIENCY = 0.20
+NIKKO_ASSET_DIR = Path(__file__).parent / "assets"
+NIKKO_AVATAR = NIKKO_ASSET_DIR / "nikko2-avatar.png"
+if not NIKKO_AVATAR.is_file():
+    NIKKO_AVATAR = NIKKO_ASSET_DIR / "nikko.jpeg"
+
+
+def nikko_says(message, bubble_key):
+    """Render an explainer in Nikko's chat-style speech bubble."""
+    with st.container(key=f"nikko_{bubble_key}"):
+        with st.chat_message("Nikko", avatar=NIKKO_AVATAR):
+            st.markdown(f"**Nikko says:** {message}")
 
 
 @st.cache_data(ttl=21600, max_entries=24, show_spinner=False)
@@ -391,9 +394,26 @@ def render_mission_challenge(site_tracks, selected_sites):
     """Turn ephemeris tracks into a simple, explicitly approximate site choice."""
     st.markdown("### Your Moon mission")
     st.write("Your crew needs sunlight to charge its batteries and a view of Earth to call home. Which site would you choose for this UTC day?")
+    st.html("""
+    <style>
+      .st-key-nikko_horizon img,
+      .st-key-nikko_solar img,
+      .st-key-nikko_communication img,
+      .st-key-nikko_site_choice img {
+        width: 3.25rem !important;
+        height: 3.25rem !important;
+        min-width: 3.25rem !important;
+        object-fit: cover;
+        object-position: center;
+        border: 2px solid #f4bfff;
+        border-radius: 0;
+        box-sizing: border-box;
+      }
+    </style>
+    """)
     with st.container(border=True):
         st.markdown("#### What does ‘above a flat horizon’ mean?")
-        st.caption("The flat horizon is an imaginary level line at 0°. Above it means the Sun or Earth could be in view if the ground were perfectly level. A nearby ridge or crater rim can raise the real skyline and block it.")
+        nikko_says("The flat horizon is an imaginary level line at 0°. Above it means the Sun or Earth could be in view if the ground were perfectly level. A nearby ridge or crater rim can raise the real skyline and block it.", "horizon")
         st.plotly_chart(
             horizon_infographic(), width="stretch", key="horizon_explainer",
             config={"displayModeBar": False},
@@ -402,15 +422,16 @@ def render_mission_challenge(site_tracks, selected_sites):
     panel_area = st.session_state.get("classroom_panel_area", 2)
     with illustration:
         st.markdown("#### How can we use the Sun for power?")
-        st.caption("Change the slider to see how a larger solar array could collect more sunlight.")
+        nikko_says(
+            f"Change the slider to grow my solar array. Each gold tile represents 1 m². "
+            f"The cartoon rover is inspired by NASA's [VIPER design](https://science.nasa.gov/mission/viper/lunar-operations/).",
+            "solar",
+        )
         st.plotly_chart(
             solar_panel_illustration(panel_area), width="stretch", key="solar_panel_preview",
             config={"displayModeBar": False},
         )
-        st.caption(
-            f"Each gold tile represents 1 m². Cartoon rover inspired by NASA's "
-            f"[VIPER design](https://science.nasa.gov/mission/viper/lunar-operations/); the vehicle and array are simplified, not to scale."
-        )
+        st.caption("The vehicle and array are simplified, not to scale.")
         panel_area = st.slider(
             "Solar panel area (square meters)", 1, 10, 2, key="classroom_panel_area",
             help="Imagine a panel that turns to face the Sun. We assume 20% of the incoming sunlight becomes electricity.",
@@ -418,7 +439,7 @@ def render_mission_challenge(site_tracks, selected_sites):
         st.caption("A kilowatt-hour (kWh) is an amount of energy. A 100 W device uses 1 kWh in 10 hours.")
     with st.container(border=True):
         st.markdown("#### How do we call Earth?")
-        st.caption("Sunlight charges the batteries that power the radio. A direct message needs Earth in view, but a ridge can block that path. Think of an orbiting relay as a space mailbox: it receives the rover's message, then sends it onward to Earth. The relay must be able to see the rover and have a path to Earth or another relay. As satellites move, coverage changes; several relays can fill more gaps. See [NASA's lunar relay plans](https://www.nasa.gov/communicating-with-missions/lunanet/).")
+        nikko_says("Sunlight charges the batteries that power the radio. A direct message needs Earth in view, but a ridge can block that path. Think of an orbiting relay as a space mailbox: it receives the rover's message, then sends it onward to Earth. The relay must be able to see the rover and have a path to Earth or another relay. As satellites move, coverage changes; several relays can fill more gaps. See [NASA's lunar relay plans](https://www.nasa.gov/communicating-with-missions/lunanet/).", "communication")
         st.plotly_chart(
             communication_infographic(), width="stretch", key="communication_explainer",
             config={"displayModeBar": False},
@@ -461,14 +482,15 @@ def render_mission_challenge(site_tracks, selected_sites):
     chosen = outlooks[choice]
     most_sun = max(outlooks, key=lambda name: outlooks[name]["sun_hours"])
     most_earth = max(outlooks, key=lambda name: outlooks[name]["earth_hours"])
-    st.info(
+    nikko_says(
         f"At **{choice}**, the Sun is above a flat horizon for about **{chosen['sun_hours']:.0f} hours**, "
         f"and Earth is above it for about **{chosen['earth_hours']:.0f} hours**. "
         f"For this date, **{most_sun}** has the most modeled sunlight and **{most_earth}** has the longest possible direct Earth view "
         "among your selected sites. A longer Earth view gives more chances to call home. "
         f"With a perfect battery, this site's estimated solar energy could run an example 100 W radio "
         f"for about **{chosen['energy_kwh'] * 10:.0f} hours**; the radio could call Earth only while Earth is visible "
-        "or through a relay."
+        "or through a relay.",
+        "site_choice",
     )
     st.caption(
         "Classroom estimate: NASA Horizons samples every 2 hours; a Sun-facing panel converts 20% of about 1,361 W/m² "
@@ -713,41 +735,11 @@ def main():
     st.title("Southlight lunar site planner")
     st.caption("Explore landing sites, lunar terrain, sunlight, and ways to call Earth.")
 
-    planner_tab, terrain_tab, flight_tab = st.tabs(["Site comparison", "Terrain explorer", "Flight status"])
+    planner_tab, terrain_tab = st.tabs(["Site comparison", "Terrain explorer"])
     with planner_tab:
         render_planner()
     with terrain_tab:
         render_terrain()
-
-    with st.sidebar:
-        st.markdown("### â˜¾  Southlight")
-        st.caption("LUNAR FIELD DESK Â· MISSION 01")
-        st.markdown("---")
-        st.header("Flight controls")
-        fuel = st.slider("Fuel remaining (%)", 0, 100, 72)
-        altitude = st.slider("Altitude (m)", 0, 5000, 1800, step=50)
-        velocity = st.slider("Vertical velocity (m/s)", 0, 100, 12)
-
-    status = landing_status(fuel, altitude, velocity)
-    status_message = {
-        "NOMINAL": st.success,
-        "CAUTION": st.warning,
-        "CRITICAL": st.error,
-    }[status]
-
-    with flight_tab:
-        left, middle, right = st.columns(3)
-        left.metric("Fuel", f"{fuel}%")
-        middle.metric("Altitude", f"{altitude:,} m")
-        right.metric("Vertical velocity", f"{velocity} m/s")
-        st.divider()
-        st.subheader("Landing status")
-        status_message(f"Flight status: {status}")
-        st.markdown("#### Mission readout")
-        st.progress(fuel / 100, text="Propellant reserve")
-        st.progress(min(altitude / 5000, 1), text="Descent altitude")
-        st.progress(min(velocity / 100, 1), text="Vertical velocity")
-        st.caption("Adjust the flight controls in the sidebar to update this readout.")
 
 
 if __name__ == "__main__":

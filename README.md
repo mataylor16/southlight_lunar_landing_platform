@@ -27,7 +27,9 @@ Barker et al. (2021), *Improved LOLA Elevation Maps for South Pole Landing Sites
 The Site comparison page requests date-specific lunar-surface observer
 ephemerides for the Sun and Earth from JPL Horizons. It shows a daily track at
 two-hour intervals and highlights the sample nearest the selected UTC hour.
-An infographic distinguishes visibility above an ideal flat horizon from
+Nikko the hippo delivers the kid-facing explanations in chat-style speech
+bubbles using `assets/nikko2-avatar.png` when present (otherwise `assets/nikko.jpeg`). An infographic
+distinguishes visibility above an ideal flat horizon from
 the real skyline, where crater rims and ridges can block a low Sun or Earth.
 A second infographic shows sunlight powering a rover radio, the direct radio
 path to Earth, and how an orbital relay can help when terrain blocks that path.

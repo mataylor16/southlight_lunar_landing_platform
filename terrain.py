@@ -1,5 +1,6 @@
 """NASA LOLA south-pole elevation downloads and interactive terrain views."""
 
+import base64
 import os
 from pathlib import Path
 import tempfile
@@ -13,6 +14,7 @@ import streamlit as st
 
 
 SOURCE = "https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/"
+GOKUTO_AVATAR = Path(__file__).parent / "assets" / "gokuto-avatar.png"
 SITES = {
     "Shackleton rim": "Site04",
     "Connecting ridge": "Site01",
@@ -21,6 +23,15 @@ SITES = {
     "Leibnitz beta plateau": "Site20",
     "Malapert massif": "Site23",
 }
+
+
+@st.cache_data(max_entries=1, show_spinner=False)
+def gokuto_avatar_html():
+    """Return Gokuto's transparent cutout inside the terrain explainer avatar frame."""
+    image_data = base64.b64encode(GOKUTO_AVATAR.read_bytes()).decode("ascii")
+    return f'''<div style="width: 8rem; height: 8rem; overflow: hidden; border: 2px solid #f4bfff; border-radius: 50%; position: relative; box-sizing: border-box;">
+      <img src="data:image/png;base64,{image_data}" alt="Gokuto" style="width: 8rem; height: 8rem; object-fit: contain;" />
+    </div>'''
 
 
 def source_url(site: str) -> str:
@@ -92,6 +103,25 @@ def load_terrain(site):
 def render_terrain():
     st.subheader("Moon surface atlas")
     st.write("Browse the south-pole ridgelines and crater rims captured by NASA's Lunar Orbiter Laser Altimeter.")
+    with st.container(key="gokuto_terrain_explainer"):
+        portrait, explanation = st.columns([2, 9], vertical_alignment="top", wrap=False)
+        with portrait:
+            st.html(gokuto_avatar_html(), width="content")
+        with explanation:
+            with st.container(border=True):
+                st.markdown(
+                    "**Gokuto says:** You’re looking at a height map of the Moon’s south pole. "
+                    "Purple areas are lower and yellow areas are higher. Switch to 3D to explore "
+                    "the hills and crater rims.\n\n"
+                    "How do we know the heights? NASA’s Lunar Reconnaissance Orbiter carried "
+                    "LOLA, a laser altimeter. It sent tiny laser pulses down to the Moon and "
+                    "timed how long the light took to bounce back. That tells scientists how "
+                    "far the surface is, and many measurements together make this map.\n\n"
+                    "The heights are measured from a smooth, imaginary Moon called a "
+                    "**reference sphere**. Think of it as the zero line: hills can be above it "
+                    "and dips below it. It isn’t the real bumpy ground, so these numbers don’t "
+                    "tell how high a lander is above the nearby surface."
+                )
     controls, info = st.columns([1, 2])
     with controls:
         label = st.selectbox("Landing region", list(SITES))
